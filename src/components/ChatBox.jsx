@@ -9,8 +9,8 @@ const MinimizeIcon = () => (
 );
 
 const MaximizeIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4h4m12 0h-4v4m0 8v4h-4m-4-8H4v4h4" />
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4h4m8 0h4v4m0 8v4h-4m-8 0H4v-4" />
     </svg>
 );
 
@@ -60,7 +60,7 @@ const ChatBox = () => {
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     // This state was missing or incorrect in the previous version
-    const [isMinimized, setIsMinimized] = useState(false);
+    const [isMinimized, setIsMinimized] = useState(true);
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => {
@@ -92,9 +92,9 @@ const ChatBox = () => {
 
     return (
         <div className={`
-            font-mono bg-black/50 backdrop-blur-lg border border-green-500/30 text-green-400
+            font-mono bg-black/50 backdrop-blur-lg border z-10 border-green-500/30 text-green-400
             shadow-2xl shadow-green-500/10 flex flex-col transition-all duration-300 ease-in-out rounded-2xl
-            ${isMinimized ? 'h-16 overflow-hidden' : 'h-[70vh]'}
+            ${isMinimized ? 'h-16 overflow-hidden' : 'h-screen w-full'}
         `}>
             <div className="flex justify-between items-center p-4 border-b border-green-500/30 flex-shrink-0">
                 <h3 className="font-bold text-lg" style={{ textShadow: '0 0 3px #39FF14' }}>
