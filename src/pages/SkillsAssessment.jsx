@@ -2,14 +2,16 @@ import pdfToText from "react-pdftotext";
 import React, { useReducer, useCallback, useContext, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnalysisContext } from '../context/AnalysisContext';
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts'; // <-- Import Recharts
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const SkillPieChart = ({ data, title }) => {
-  const COLORS = ['#00C49F', '#0088FE', '#FFBB28', '#FF8042', '#AF19FF', '#FF4560'];
+  const COLORS = ['#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#EF4444', '#06B6D4'];
 
   return (
-    <div className="" >
-      <h3 className="text-xl font-semibold text-green-300 text-center mb-4">{title}</h3>
+    <div>
+      <h3 className="text-xl font-semibold bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent text-center mb-4">
+        {title}
+      </h3>
       <div style={{ width: '100%', height: 400 }}>
         <ResponsiveContainer>
           <PieChart>
@@ -30,9 +32,12 @@ const SkillPieChart = ({ data, title }) => {
             <Tooltip
               formatter={(value, name) => [`Proficiency: ${value}/10`, name]}
               contentStyle={{
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                borderColor: '#39FF14',
-                color: '#FFFFFF'
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                borderColor: '#10B981',
+                borderRadius: '12px',
+                color: '#E2E8F0',
+                backdropFilter: 'blur(20px)',
+                boxShadow: '0 0 20px rgba(16, 185, 129, 0.2)'
               }}
             />
             <Legend />
@@ -42,6 +47,7 @@ const SkillPieChart = ({ data, title }) => {
     </div>
   );
 };
+
 const analyzeResumeWithGroq = async (resumeText) => {
   const apiKey = import.meta.env.VITE_GROQ_API_KEY;
   if (!apiKey) {
@@ -102,8 +108,6 @@ const analyzeResumeWithGroq = async (resumeText) => {
   return data.choices[0].message.content;
 };
 
-
-
 const initialState = {
   status: 'idle',
   file: null,
@@ -131,14 +135,14 @@ function assessmentReducer(state, action) {
 // --- Child Components ---
 
 const Spinner = () => (
-  <svg className="animate-spin h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+  <svg className="animate-spin h-5 w-5 text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
   </svg>
 );
 
 const FileUpload = ({ onFileSelect, disabled, fileName }) => (
-  <div className="border-2 border-dashed border-green-500/50 rounded-lg p-8 text-center hover:border-green-400 hover:bg-green-900/20 transition-colors duration-300 mb-6">
+  <div className="border-2 border-dashed border-emerald-400/30 rounded-xl p-8 text-center hover:border-emerald-400/50 hover:bg-emerald-400/5 transition-all duration-300 mb-6 backdrop-blur-sm">
     <input
       type="file"
       accept=".pdf"
@@ -147,19 +151,24 @@ const FileUpload = ({ onFileSelect, disabled, fileName }) => (
       id="resume-upload"
       disabled={disabled}
     />
-    <label htmlFor="resume-upload" className={`cursor-pointer flex flex-col items-center ${disabled ? 'cursor-not-allowed' : ''}`}>
-      <svg className="w-12 h-12 text-green-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-      </svg>
-      <span className="text-green-400/80">
+    <label htmlFor="resume-upload" className={`cursor-pointer flex flex-col items-center ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}>
+      <div className="relative mb-4">
+        <svg className="w-12 h-12 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+        </svg>
+        <div className="absolute inset-0 bg-emerald-400/20 blur-xl rounded-full animate-pulse"></div>
+      </div>
+      <span className="text-slate-300 text-lg font-medium">
         {fileName || 'Click to upload your resume (PDF)'}
+      </span>
+      <span className="text-slate-500 text-sm mt-2">
+        Upload your PDF resume for AI-powered analysis
       </span>
     </label>
   </div>
 );
 
 const StatusIndicator = ({ status, error }) => {
-  
   const messages = {
     extracting: 'Extracting text from PDF...',
     analyzing: 'Analyzing resume with AI...',
@@ -167,50 +176,58 @@ const StatusIndicator = ({ status, error }) => {
     error: error || 'An unknown error occurred.',
   };
 
-  const colorClass = status === 'error' ? 'text-red-500' : 'text-green-400';
+  const getStatusColor = () => {
+    switch (status) {
+      case 'error': return 'text-red-400';
+      case 'success': return 'text-emerald-400';
+      default: return 'text-blue-400';
+    }
+  };
+
+  const getStatusBg = () => {
+    switch (status) {
+      case 'error': return 'bg-red-400/10 border-red-400/30';
+      case 'success': return 'bg-emerald-400/10 border-emerald-400/30';
+      default: return 'bg-blue-400/10 border-blue-400/30';
+    }
+  };
 
   if (status === 'idle') return null;
 
   return (
-    <div className="text-sm text-center mb-6 flex items-center justify-center gap-3 p-3 bg-black/30 rounded-lg">
+    <div className={`text-sm text-center mb-6 flex items-center justify-center gap-3 p-4 rounded-xl border backdrop-blur-sm ${getStatusBg()}`}>
       {(status === 'extracting' || status === 'analyzing') && <Spinner />}
-      <span className={colorClass}>{messages[status]}</span>
+      <span className={getStatusColor()}>{messages[status]}</span>
     </div>
   );
 };
 
 const AnalysisResult = ({ analysis }) => {
-  // Memoize the parsed data to avoid re-parsing on every render
   const parsedData = useMemo(() => {
     if (!analysis) return null;
     try {
-      // Find the start and end of the JSON object in case the AI adds extra text
       const jsonStart = analysis.indexOf('{');
       const jsonEnd = analysis.lastIndexOf('}') + 1;
       const jsonString = analysis.substring(jsonStart, jsonEnd);
       return JSON.parse(jsonString);
     } catch (error) {
       console.error("Failed to parse analysis JSON:", error);
-      // Fallback to show raw text if JSON parsing fails
       return { rawText: analysis };
     }
   }, [analysis]);
 
   if (!parsedData) return null;
   
-  // Fallback for non-JSON responses
   if (parsedData.rawText) {
-      return (
-          <div className="bg-black/50 backdrop-blur-lg border border-red-500/30 p-6 rounded-lg">
-              <h2 className="text-xl font-semibold text-red-400 mb-2">Could Not Parse AI Response</h2>
-              <p className="text-red-400/80 mb-4">Displaying raw text from the AI:</p>
-              <pre className="text-sm whitespace-pre-wrap">{parsedData.rawText}</pre>
-          </div>
-      );
+    return (
+      <div className="bg-slate-900/80 backdrop-blur-xl border border-red-400/30 p-6 rounded-xl">
+        <h2 className="text-xl font-semibold text-red-400 mb-2">Could Not Parse AI Response</h2>
+        <p className="text-red-400/80 mb-4">Displaying raw text from the AI:</p>
+        <pre className="text-sm whitespace-pre-wrap text-slate-300">{parsedData.rawText}</pre>
+      </div>
+    );
   }
 
-
-  // Prepare data for charts
   const techSkillsData = [
     ...(parsedData.technicalSkills?.programmingLanguages || []),
     ...(parsedData.technicalSkills?.technologiesFrameworks || []),
@@ -221,46 +238,86 @@ const AnalysisResult = ({ analysis }) => {
   return (
     <div className="space-y-8">
       {/* Overall Score Section */}
-      <div className="bg-black/50 backdrop-blur-lg border border-green-500/30 rounded-2xl p-6 text-center">
-        <h2 className="text-xl font-semibold text-green-300 mb-2">Overall Assessment Score</h2>
-        <p className="text-6xl font-bold" style={{ color: '#39FF14', textShadow: '0 0 10px #39FF14' }}>
-          {parsedData.overallScore || 'N/A'}
-          <span className="text-2xl">%</span>
-        </p>
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-violet-500/20 rounded-2xl blur-xl"></div>
+        <div className="relative bg-slate-900/80 backdrop-blur-xl border border-emerald-400/30 rounded-2xl p-8 text-center">
+          <h2 className="text-2xl font-semibold bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent mb-4">
+            Overall Assessment Score
+          </h2>
+          <div className="relative inline-block">
+            <p className="text-7xl font-bold bg-gradient-to-r from-emerald-400 via-blue-400 to-violet-400 bg-clip-text text-transparent">
+              {parsedData.overallScore || 'N/A'}
+              <span className="text-3xl">%</span>
+            </p>
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-blue-400 to-violet-400 opacity-20 blur-2xl rounded-full"></div>
+          </div>
+        </div>
       </div>
 
       {/* Skills Charts Section */}
-      <div className="grid grid-cols-1 gap-8 justify-center items-center">
-        <div className="bg-black/50 backdrop-blur-lg border border-green-500/30 rounded-2xl p-6">
-          <SkillPieChart data={techSkillsData} title="Technical Skills Proficiency" />
+      <div className="grid grid-cols-1 gap-8">
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-blue-500/10 rounded-2xl blur-xl"></div>
+          <div className="relative bg-slate-900/80 backdrop-blur-xl border border-emerald-400/30 rounded-2xl p-6">
+            <SkillPieChart data={techSkillsData} title="Technical Skills Proficiency" />
+          </div>
         </div>
-        <div className="bg-black/50 backdrop-blur-lg border border-green-500/30 rounded-2xl p-6">
-          <SkillPieChart data={softSkillsData} title="Soft Skills Score" />
+        
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-violet-500/10 rounded-2xl blur-xl"></div>
+          <div className="relative bg-slate-900/80 backdrop-blur-xl border border-blue-400/30 rounded-2xl p-6">
+            <SkillPieChart data={softSkillsData} title="Soft Skills Score" />
+          </div>
         </div>
       </div>
       
       {/* Career Recommendations Section */}
-      <div className="bg-black/50 backdrop-blur-lg border border-green-500/30 rounded-2xl p-6">
-          <h2 className="text-2xl font-semibold text-green-300 mb-4">Career Recommendations</h2>
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-emerald-500/10 rounded-2xl blur-xl"></div>
+        <div className="relative bg-slate-900/80 backdrop-blur-xl border border-violet-400/30 rounded-2xl p-6">
+          <h2 className="text-2xl font-semibold bg-gradient-to-r from-violet-400 to-emerald-400 bg-clip-text text-transparent mb-6">
+            Career Recommendations
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                  <h3 className="text-lg font-bold text-green-400 mb-2">Suitable Roles</h3>
-                  <ul className="list-disc list-inside space-y-1">
-                      {(parsedData.careerRecommendations?.suitableRoles || []).map(role => <li key={role}>{role}</li>)}
-                  </ul>
-              </div>
-              <div>
-                  <h3 className="text-lg font-bold text-green-400 mb-2">Skills to Improve</h3>
-                  <ul className="list-disc list-inside space-y-1">
-                      {(parsedData.careerRecommendations?.skillsToImprove || []).map(skill => <li key={skill}>{skill}</li>)}
-                  </ul>
-              </div>
+            <div className="bg-slate-800/50 backdrop-blur-sm border border-emerald-400/20 rounded-xl p-4">
+              <h3 className="text-lg font-bold text-emerald-400 mb-3 flex items-center">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2V6" />
+                </svg>
+                Suitable Roles
+              </h3>
+              <ul className="space-y-2">
+                {(parsedData.careerRecommendations?.suitableRoles || []).map(role => 
+                  <li key={role} className="text-slate-300 flex items-start">
+                    <span className="text-emerald-400 mr-2">•</span>
+                    {role}
+                  </li>
+                )}
+              </ul>
+            </div>
+            
+            <div className="bg-slate-800/50 backdrop-blur-sm border border-blue-400/20 rounded-xl p-4">
+              <h3 className="text-lg font-bold text-blue-400 mb-3 flex items-center">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                Skills to Improve
+              </h3>
+              <ul className="space-y-2">
+                {(parsedData.careerRecommendations?.skillsToImprove || []).map(skill => 
+                  <li key={skill} className="text-slate-300 flex items-start">
+                    <span className="text-blue-400 mr-2">•</span>
+                    {skill}
+                  </li>
+                )}
+              </ul>
+            </div>
           </div>
+        </div>
       </div>
     </div>
   );
 };
-
 
 // --- Main Component ---
 const SkillsAssessment = () => {
@@ -268,6 +325,7 @@ const SkillsAssessment = () => {
   const { status, file, analysis, error } = state;
   const { setAnalysisData } = useContext(AnalysisContext); 
   const navigate = useNavigate(); 
+
   const handleFileSelect = useCallback(async (e) => {
     const selectedFile = e.target.files?.[0];
     if (!selectedFile) return;
@@ -279,13 +337,11 @@ const SkillsAssessment = () => {
     dispatch({ type: 'START_EXTRACTION', payload: selectedFile });
 
     try {
-      // Step 1: Extract text
       const extractedText = await pdfToText(selectedFile);
       if (!extractedText.trim()) {
         throw new Error('Could not extract text from PDF. The file might be empty or image-based.');
       }
 
-      // Step 2: Start analysis
       dispatch({ type: 'START_ANALYSIS' });
       const analysisResult = await analyzeResumeWithGroq(extractedText);
       const jsonStart = analysisResult.indexOf('{');
@@ -293,44 +349,94 @@ const SkillsAssessment = () => {
       const jsonString = analysisResult.substring(jsonStart, jsonEnd);
       const parsedData = JSON.parse(jsonString);
       setAnalysisData(parsedData);
-      // Step 3: Show success
       dispatch({ type: 'SUCCESS', payload: analysisResult });
 
     } catch (err) {
       console.error(err);
       dispatch({ type: 'ERROR', payload: err.message });
     }
-  }, []);
+  }, [setAnalysisData]);
 
   const isProcessing = status === 'extracting' || status === 'analyzing';
 
   return (
-    <main className="relative min-h-screen w-full font-mono text-green-400 bg-black">
+    <main className="relative min-h-screen w-full font-mono text-slate-200 bg-gradient-to-br from-slate-900 via-black to-indigo-900">
+      {/* Background Effects */}
+      <div className="absolute inset-0">
+        {/* Grid Background */}
+        <div className="absolute inset-0 opacity-20" style={{
+          backgroundImage: `
+            linear-gradient(rgba(16, 185, 129, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(16, 185, 129, 0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '60px 60px'
+        }}></div>
+        
+        {/* Floating particles */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(15)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute rounded-full animate-pulse"
+              style={{
+                width: `${Math.random() * 4 + 2}px`,
+                height: `${Math.random() * 4 + 2}px`,
+                background: i % 3 === 0 ? '#10B981' : i % 3 === 1 ? '#3B82F6' : '#8B5CF6',
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                opacity: 0.3 + Math.random() * 0.3,
+                animationDelay: `${Math.random() * 3}s`,
+                animationDuration: `${2 + Math.random() * 3}s`,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Corner accents */}
+        <div className="absolute top-0 left-0 w-40 h-40">
+          <div className="absolute top-8 left-8 w-6 h-6 border-t-2 border-l-2 border-emerald-400/40 animate-pulse"></div>
+          <div className="absolute top-12 left-12 w-2 h-2 bg-emerald-400/60 rounded-full animate-ping"></div>
+        </div>
+        <div className="absolute top-0 right-0 w-40 h-40">
+          <div className="absolute top-8 right-8 w-6 h-6 border-t-2 border-r-2 border-blue-400/40 animate-pulse"></div>
+          <div className="absolute top-12 right-12 w-2 h-2 bg-blue-400/60 rounded-full animate-ping" style={{ animationDelay: '0.5s' }}></div>
+        </div>
+      </div>
+
       <div className="relative z-10 p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-8 text-center" style={{ textShadow: '0 0 5px #39FF14, 0 0 10px #39FF14' }}>
+        <h1 className="text-3xl sm:text-4xl font-bold mb-8 text-center bg-gradient-to-r from-emerald-400 via-blue-400 to-violet-400 bg-clip-text text-transparent">
           AI-Powered Skills Assessment
         </h1>
-        <div className="bg-black/50 backdrop-blur-lg border border-green-500/30 rounded-2xl shadow-2xl shadow-green-500/10 p-6 sm:p-8 mb-8">
-          {status !== 'success' && (
-            <>
-              <h2 className="text-xl font-semibold mb-2 text-green-300">Upload Your Resume</h2>
-              <p className="text-green-400/70 mb-6">
-                Get an AI-powered analysis of your skills, experience, and career recommendations in seconds.
-              </p>
-              <FileUpload onFileSelect={handleFileSelect} disabled={isProcessing} fileName={state.file?.name} />
-            </>
-          )}
+        
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-violet-500/10 rounded-2xl blur-xl"></div>
+          <div className="relative bg-slate-900/80 backdrop-blur-xl border border-emerald-400/30 rounded-2xl p-6 sm:p-8 mb-8 shadow-2xl">
+            {status !== 'success' && (
+              <>
+                <h2 className="text-xl font-semibold mb-2 bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">
+                  Upload Your Resume
+                </h2>
+                <p className="text-slate-400 mb-6">
+                  Get an AI-powered analysis of your skills, experience, and career recommendations in seconds.
+                </p>
+                <FileUpload onFileSelect={handleFileSelect} disabled={isProcessing} fileName={state.file?.name} />
+              </>
+            )}
 
-          <StatusIndicator status={state.status} error={state.error} />
+            <StatusIndicator status={state.status} error={state.error} />
 
-          {status === 'success' && (
-            <button
-              onClick={() => dispatch({ type: 'RESET' })}
-              className="w-full cursor-pointer bg-green-600 text-black font-bold py-3 px-4 rounded-lg hover:bg-green-500 transition-colors"
-            >
-              Analyze Another Resume
-            </button>
-          )}
+            {status === 'success' && (
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-xl blur opacity-70 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <button
+                  onClick={() => dispatch({ type: 'RESET' })}
+                  className="relative w-full bg-gradient-to-r from-emerald-600 to-blue-600 text-white font-bold py-3 px-4 rounded-xl hover:from-emerald-500 hover:to-blue-500 transition-all duration-300 transform hover:scale-[1.02] shadow-lg"
+                >
+                  Analyze Another Resume
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         <AnalysisResult analysis={analysis} />
