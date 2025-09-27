@@ -35,10 +35,9 @@
 ## ✨ Key Features
 
 Elevate comes with a range of features to guide users on their professional journey:
-
 * [cite_start]**🤖 AI Career Assistant:** A 24/7 AI chatbot offers real-time advice on careers, learning paths, and skills[cite: 14, 57, 58, 65].
 * [cite_start]**📄 Resume Intelligence:** The platform performs a comprehensive skill assessment by parsing and analyzing the user's resume[cite: 15, 53, 54]. [cite_start]It evaluates technical skills, communication, and provides an overall score[cite: 15].
-* [cite_start]**🗺️ Actionable Roadmaps:** It generates clear, step-by-step career progression paths and skill improvement plans[cite: 16, 48, 50, 51, 52].
+* [cite_start]**🗺️ Actionable Roadmaps:** It generates clear, step-by-step career progression paths and skill improvement plans[cite: 48, 50, 51, 52].
 * [cite_start]**🔐 Smooth Authentication:** Secure user login, sign-up, and profile management are handled through Clerk services for a personalized experience[cite: 17, 46, 47].
 * [cite_start]**📊 Interactive Dashboard & Career Paths:** Users can visualize their technical skill proficiency and explore interactive career pathways for roles like Full-Stack Developer, Frontend Engineer, and Backend Engineer[cite: 59, 71, 88, 89, 90, 91].
 
@@ -73,7 +72,7 @@ The process is simple:
 The user journey from start to finish is designed to be seamless and intuitive.
 
 1.  [cite_start]**Start & Authentication:** A new user accesses Elevate and creates a profile, while a returning user logs in[cite: 94, 95, 96, 97, 98, 100]. [cite_start]Authentication is handled by Clerk[cite: 99, 110].
-2.  [cite_start]**Interaction:** After successful authentication, the user can access their dashboard[cite: 101]. [cite_start]They can interact with the AI Chatbot by sending queries and receiving generated responses on the frontend[cite: 103, 102, 104, 105, 108].
+2.  [cite_start]**Interaction:** After successful authentication, the user can access their dashboard[cite: 101]. [cite_start]They can interact with the AI Chatbot by sending queries and receiving generated responses on the frontend[cite: 102, 103, 104, 105, 108].
 3.  [cite_start]**Skill Assessment:** The user navigates to the skill assessment page and uploads their resume (PDF/DOCX)[cite: 114, 116, 117].
 4.  [cite_start]**Backend Processing:** The backend server extracts text from the resume[cite: 113, 115]. [cite_start]An AI Model API processes this text to generate structured JSON data[cite: 119, 120].
 5.  [cite_start]**Personalized Guidance:** The structured data is used to fetch and display the assessment results on the Career Paths page, including recommended job roles and skills to improve[cite: 121, 122, 124].
@@ -98,12 +97,12 @@ The user journey from start to finish is designed to be seamless and intuitive.
     * [cite_start]Google Cloud AI [cite: 7, 131]
 * [cite_start]**Storage and Deployment**[cite: 141]:
     * [cite_start]MongoDB [cite: 148]
-    * [cite_start]Docker [cite: 141] (Logo shown)
+    * Docker (Logo shown on page 7)
 * **Authentication**:
     * [cite_start]Clerk [cite: 143]
 * [cite_start]**Version Control**[cite: 151]:
-    * Git (Logo shown)
-    * GitHub (Logo shown)
+    * Git (Logo shown on page 7)
+    * GitHub (Logo shown on page 7)
 
 ---
 
